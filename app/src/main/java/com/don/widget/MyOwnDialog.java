@@ -111,11 +111,12 @@ public class MyOwnDialog extends Dialog {
         private String message;
 
         private View contentView, v;
-        private String imgurl;
+        private List<String> imgurl;
 
         private ImageView iv_ad, iv_close;
         private FrameLayout flContentContainer;
         private ImageView imageView;
+        private ArrayList<ImageView> imageViews;
 
         public Builder(Context context) {
             this.context = context;
@@ -132,7 +133,7 @@ public class MyOwnDialog extends Dialog {
         }
 
         //设置位置（传listview的item过来）
-        public Builder setImageUrl(String imgurl) {
+        public Builder setImageUrl(List<String> imgurl) {
             this.imgurl = imgurl;
 
             return this;
@@ -152,27 +153,33 @@ public class MyOwnDialog extends Dialog {
 
 
             flContentContainer = (FrameLayout) layout.findViewById(R.id.fl_content_container);
+            imageViews =new ArrayList<ImageView>();
 
-
+            for (int i = 0; i < imgurl.size(); i++) {
                  imageView = new ImageView(context);
                 imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                imageViews.add(imageView);
+                flContentContainer.addView(imageViews.get(i));
 
-                flContentContainer.addView(imageView);
-
-                Log.i("glide", "imgurl:" + imgurl);
+                Log.i("glide", "imgurl:" + imgurl.get(i));
 
                 Glide.with(context)
-                        .load(imgurl)
+                        .load(imgurl.get(i))
                         .crossFade()
                         .placeholder(R.mipmap.ic_adc)
                         .error(R.mipmap.ic_launcher_round)
-                        .into(imageView);
-
+                        .into((imageViews.get(i)));
+            }
 
             iv_close = (ImageView) layout.findViewById(R.id.iv_close);
 
             iv_close.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
+                    if(imageViews.size()>1) {
+                        flContentContainer.removeView(imageViews.get(imageViews.size() - 1));
+                        imageViews.remove(imageViews.size()-1);
+                    }
+                    else
                         dialog.dismiss();
 
                 }

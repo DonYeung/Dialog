@@ -27,18 +27,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (v.getId() == R.id.btn_show) {
-                     dialog1 = DialogManager.showDialog(MainActivity.this,"dialog1","http://www.shiyan360.cn/Public/Uploads/Chuangke/20170619/59473876b4e81.jpg");
+                    List<String> imgurl = new ArrayList<String>();
+                    imgurl.add("http://www.shiyan360.cn/Public/Uploads/Chuangke/20170619/59473876b4e81.jpg");
+                    imgurl.add("http://cms-bucket.nosdn.127.net/catchpic/2/24/24f22569f438346c04668cfbccae1d8d.jpg");
+                    imgurl.add("http://dingyue.nosdn.127.net/ws57UjkB1emt4Sub1kAo9ybdrYFmVdHVHX0t=I3KA2=S71500278874410.jpg");
+                     dialog1 = DialogManager.showDialog(MainActivity.this,"dialog1",imgurl);
                     dialog1.setPriority(1);
 
                     dialog1.display();
 
 
-                     dialog2 = DialogManager.showDialog(MainActivity.this,"dialog2","http://cms-bucket.nosdn.127.net/catchpic/2/24/24f22569f438346c04668cfbccae1d8d.jpg");
+                     dialog2 = DialogManager.showDialog(MainActivity.this,"dialog2",imgurl);
                     dialog2.setPriority(2);
                     onPrepareDialog(1,dialog1);
                     dialog2.display();
 
-                     dialog3 = DialogManager.showDialog(MainActivity.this,"dialog3","http://dingyue.nosdn.127.net/ws57UjkB1emt4Sub1kAo9ybdrYFmVdHVHX0t=I3KA2=S71500278874410.jpg");
+                     dialog3 = DialogManager.showDialog(MainActivity.this,"dialog3",imgurl);
                     dialog3.setPriority(3);
                     dialog3.display();
 
