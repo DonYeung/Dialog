@@ -15,7 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.don.common.DialogManager;
@@ -26,6 +28,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -108,9 +111,11 @@ public class MyOwnDialog extends Dialog {
         private String message;
 
         private View contentView, v;
-        private List<String> imgurl;
+        private String imgurl;
 
         private ImageView iv_ad, iv_close;
+        private FrameLayout flContentContainer;
+        private ImageView imageView;
 
         public Builder(Context context) {
             this.context = context;
@@ -127,7 +132,7 @@ public class MyOwnDialog extends Dialog {
         }
 
         //设置位置（传listview的item过来）
-        public Builder setImageUrl(List<String> imgurl) {
+        public Builder setImageUrl(String imgurl) {
             this.imgurl = imgurl;
 
             return this;
@@ -144,33 +149,40 @@ public class MyOwnDialog extends Dialog {
             dialog.addContentView(layout, new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-            iv_ad = (ImageView) layout.findViewById(R.id.iv_ad);
-            for (int i = 0; i < imgurl.size(); i++) {
-                Log.i("glide", "imgurl:" + imgurl.get(i));
+
+
+            flContentContainer = (FrameLayout) layout.findViewById(R.id.fl_content_container);
+
+
+                 imageView = new ImageView(context);
+                imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                flContentContainer.addView(imageView);
+
+                Log.i("glide", "imgurl:" + imgurl);
 
                 Glide.with(context)
-                        .load(imgurl.get(i))
+                        .load(imgurl)
                         .crossFade()
                         .placeholder(R.mipmap.ic_adc)
                         .error(R.mipmap.ic_launcher_round)
-                        .into((iv_ad));
-            }
+                        .into(imageView);
 
 
             iv_close = (ImageView) layout.findViewById(R.id.iv_close);
+
             iv_close.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
+                @Override public void onClick(View v) {
+                        dialog.dismiss();
+
                 }
             });
+
             dialog.setTitle(message);
             dialog.setContentView(layout);
             return dialog;
         }
-
     }
-
 
 
 }

@@ -45,10 +45,9 @@ public class DialogManager {
      * @param content 内容
      * @return 返回将要显示的Dialog实例
      */
-    public static MyOwnDialog showDialog(Context context,String content,List<String> imgurl){
+    public static MyOwnDialog showDialog(Context context,String content,String imgurl){
         MyOwnDialog.Builder builder = new MyOwnDialog.Builder(context);
         builder.setImageUrl(imgurl);
-        builder.setMessage(content);
         return builder.create();
     }
 }
