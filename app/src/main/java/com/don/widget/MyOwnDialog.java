@@ -145,7 +145,16 @@ public class MyOwnDialog extends Dialog {
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
             iv_ad = (ImageView) layout.findViewById(R.id.iv_ad);
-            mHandler.sendEmptyMessage(0);
+            for (int i = 0; i < imgurl.size(); i++) {
+                Log.i("glide", "imgurl:" + imgurl.get(i));
+
+                Glide.with(context)
+                        .load(imgurl.get(i))
+                        .crossFade()
+                        .placeholder(R.mipmap.ic_adc)
+                        .error(R.mipmap.ic_launcher_round)
+                        .into((iv_ad));
+            }
 
 
             iv_close = (ImageView) layout.findViewById(R.id.iv_close);
@@ -159,28 +168,7 @@ public class MyOwnDialog extends Dialog {
             dialog.setContentView(layout);
             return dialog;
         }
-        Handler mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                switch (msg.what) {
-                    case 0:
-                        for (int i = 0; i < imgurl.size(); i++) {
-                            Log.i("glide", "imgurl:" + imgurl.get(i));
 
-                            Glide.with(context)
-                                    .load(imgurl.get(i))
-                                    .crossFade()
-                                    .placeholder(R.mipmap.ic_adc)
-                                    .error(R.mipmap.ic_launcher_round)
-                                    .into((iv_ad));
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
     }
 
 
