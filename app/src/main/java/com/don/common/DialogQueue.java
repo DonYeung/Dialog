@@ -25,7 +25,6 @@ import java.util.ListIterator;
  *     </pre>
  * 显示顺序为dialog1→dialog3→dialog4→dialog2。</p>
  * <br/>
- * Created by Jaren on 2016/12/21.
  */
 
 public class DialogQueue {

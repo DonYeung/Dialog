@@ -1,35 +1,26 @@
 package com.don.widget;
 
+import android.animation.AnimatorInflater;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.os.Message;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AlertDialog;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.Resource;
 import com.don.common.DialogManager;
 import com.don.dialog.R;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by drcom on 2017/7/19.
@@ -110,13 +101,12 @@ public class MyOwnDialog extends Dialog {
         private Context context;
         private String message;
 
-        private View contentView, v;
-        private List<String> imgurl;
+        private String imgurl;
 
         private ImageView iv_ad, iv_close;
         private FrameLayout flContentContainer;
         private ImageView imageView;
-        private ArrayList<ImageView> imageViews;
+        private LinearLayout anim_container;
 
         public Builder(Context context) {
             this.context = context;
@@ -127,13 +117,8 @@ public class MyOwnDialog extends Dialog {
             return this;
         }
 
-        public Builder setContentView(View v) {
-            this.contentView = v;
-            return this;
-        }
-
         //设置位置（传listview的item过来）
-        public Builder setImageUrl(List<String> imgurl) {
+        public Builder setImageUrl(String imgurl) {
             this.imgurl = imgurl;
 
             return this;
@@ -150,44 +135,48 @@ public class MyOwnDialog extends Dialog {
             dialog.addContentView(layout, new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+//            layout.setAnimation(setAnimation());
+            anim_container= (LinearLayout) layout.findViewById(R.id.anim_container);
 
+            iv_ad= (ImageView) layout.findViewById(R.id.iv_ad);
+//            flContentContainer = (FrameLayout) layout.findViewById(R.id.fl_content_container);
+//                 imageView = new ImageView(context);
+//                imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//                flContentContainer.addView(imageView);
 
-            flContentContainer = (FrameLayout) layout.findViewById(R.id.fl_content_container);
-            imageViews =new ArrayList<ImageView>();
-
-            for (int i = 0; i < imgurl.size(); i++) {
-                 imageView = new ImageView(context);
-                imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                imageViews.add(imageView);
-                flContentContainer.addView(imageViews.get(i));
-
-                Log.i("glide", "imgurl:" + imgurl.get(i));
+                Log.i("glide", "imgurl:" + imgurl);
 
                 Glide.with(context)
-                        .load(imgurl.get(i))
+                        .load(imgurl)
                         .crossFade()
                         .placeholder(R.mipmap.ic_adc)
                         .error(R.mipmap.ic_launcher_round)
-                        .into((imageViews.get(i)));
-            }
+                        .into(iv_ad);
+            iv_ad.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(context,"广告点击"+message,Toast.LENGTH_SHORT).show();
+                }
+            });
+
 
             iv_close = (ImageView) layout.findViewById(R.id.iv_close);
 
             iv_close.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    if(imageViews.size()>1) {
-                        flContentContainer.removeView(imageViews.get(imageViews.size() - 1));
-                        imageViews.remove(imageViews.size()-1);
-                    }
-                    else
                         dialog.dismiss();
 
                 }
             });
-
-            dialog.setTitle(message);
             dialog.setContentView(layout);
             return dialog;
+        }
+        protected Animation setAnimation() {
+            Animation anim = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
+                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                    0.5f);// 从0.5倍放大到1倍
+            anim.setDuration(1000);
+            return anim;
         }
     }
 

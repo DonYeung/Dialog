@@ -6,14 +6,11 @@ package com.don.common;
 
 import android.content.Context;
 
-import com.don.dialog.R;
 import com.don.widget.MyOwnDialog;
-
-import java.util.List;
 
 /**
  * 全局Dialog管理
- * Created by Jaren on 2017/2/7.
+ * Created by Don on 2017/7/19.
  */
 
 public class DialogManager {
