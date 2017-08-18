@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -33,6 +35,8 @@ public class MyOwnDialog extends Dialog {
     private int priority;
     private MyOwnDialog dialogPro;
 
+
+
     public MyOwnDialog(Context context) {
         super(context);
         dialogPro = this;
@@ -51,6 +55,8 @@ public class MyOwnDialog extends Dialog {
     public void setPriority(int priority) {
         this.priority = priority;
     }
+
+
 
     public interface OnCustomDialogListener {
         public void back(String name);
@@ -107,6 +113,15 @@ public class MyOwnDialog extends Dialog {
         private FrameLayout flContentContainer;
         private ImageView imageView;
         private LinearLayout anim_container;
+        private View layout;
+
+        private int centerX;
+        private int centerY;
+        private int depthZ = 700;//修改此处可以改变距离来达到你满意的效果
+        private int duration = 300;//动画时间
+        private Rotate3dAnimation openAnimation;
+        private Rotate3dAnimation closeAnimation;
+        private boolean isOpen = false;
 
         public Builder(Context context) {
             this.context = context;
@@ -130,12 +145,12 @@ public class MyOwnDialog extends Dialog {
             //主题可以换
             final MyOwnDialog dialog = new MyOwnDialog(context,
                     R.style.LocatonDialogStyle);
-            View layout = inflater.inflate(R.layout.alertdialog_mine, null);
+             layout = inflater.inflate(R.layout.alertdialog_mine, null);
 
             dialog.addContentView(layout, new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-//            layout.setAnimation(setAnimation());
+
             anim_container= (LinearLayout) layout.findViewById(R.id.anim_container);
 
             iv_ad= (ImageView) layout.findViewById(R.id.iv_ad);
@@ -165,20 +180,124 @@ public class MyOwnDialog extends Dialog {
             iv_close.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                         dialog.dismiss();
+//                    startAnimationn();//测试翻转动画
 
                 }
             });
             dialog.setContentView(layout);
+            dialog.setCanceledOnTouchOutside(true);
+            dialog.setOnCancelListener(new OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    Log.i("onCancel","onCancel");
+                }
+            });
             return dialog;
         }
-        protected Animation setAnimation() {
-            Animation anim = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
-                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
-                    0.5f);// 从0.5倍放大到1倍
-            anim.setDuration(1000);
-            return anim;
+//        protected Animation setAnimation() {
+//            Animation anim = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
+//                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+//                    0.5f);// 从0.5倍放大到1倍
+//            anim.setDuration(1000);
+//            return anim;
+//        }
+
+        /** 翻转动画
+        private void startAnimationn() {
+            //接口回调传递参数
+            centerX = layout.getWidth() / 2;
+            centerY = layout.getHeight() / 2;
+            if (openAnimation == null) {
+                initOpenAnim();
+                initCloseAnim();
+            }
+
+            //用作判断当前点击事件发生时动画是否正在执行
+            if (openAnimation.hasStarted() && !openAnimation.hasEnded()) {
+                return;
+            }
+            if (closeAnimation.hasStarted() && !closeAnimation.hasEnded()) {
+                return;
+            }
+
+            //判断动画执行
+            if (isOpen) {
+
+                layout.startAnimation(openAnimation);
+
+            } else {
+
+                layout.startAnimation(closeAnimation);
+
+            }
+            isOpen = !isOpen;
         }
+
+        //注意旋转角度
+        private void initOpenAnim() {
+            //从0到90度，顺时针旋转视图，此时reverse参数为true，达到90度时动画结束时视图变得不可见，
+            openAnimation = new Rotate3dAnimation(0, 90, centerX, centerY, depthZ, true);
+            openAnimation.setDuration(duration);
+            openAnimation.setFillAfter(true);
+            openAnimation.setInterpolator(new AccelerateInterpolator());
+            openAnimation.setAnimationListener(new Animation.AnimationListener() {
+
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+//                    llRegister.setVisibility(View.GONE);
+//                    llContent.setVisibility(View.VISIBLE);
+                    //从270到360度，顺时针旋转视图，此时reverse参数为false，达到360度动画结束时视图变得可见
+                    Rotate3dAnimation rotateAnimation = new Rotate3dAnimation(270, 360, centerX, centerY, depthZ, false);
+                    rotateAnimation.setDuration(duration);
+                    rotateAnimation.setFillAfter(true);
+                    rotateAnimation.setInterpolator(new DecelerateInterpolator());
+                    layout.startAnimation(rotateAnimation);
+                }
+            });
+        }
+        private void initCloseAnim() {
+            closeAnimation = new Rotate3dAnimation(360, 270, centerX, centerY, depthZ, true);
+            closeAnimation.setDuration(duration);
+            closeAnimation.setFillAfter(true);
+            closeAnimation.setInterpolator(new AccelerateInterpolator());
+            closeAnimation.setAnimationListener(new Animation.AnimationListener() {
+
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+//                    llRegister.setVisibility(View.VISIBLE);
+//                    llContent.setVisibility(View.GONE);
+                    Rotate3dAnimation rotateAnimation = new Rotate3dAnimation(90, 0, centerX, centerY, depthZ, false);
+                    rotateAnimation.setDuration(duration);
+                    rotateAnimation.setFillAfter(true);
+                    rotateAnimation.setInterpolator(new DecelerateInterpolator());
+                    layout.startAnimation(rotateAnimation);
+                }
+            });
+        }
+        */
+
     }
+
 
 
 }
